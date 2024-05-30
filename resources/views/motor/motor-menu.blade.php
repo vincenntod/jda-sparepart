@@ -63,7 +63,7 @@
                     "orderable": true,
                 },
                 {
-                    "data": "id_sparepart",
+                    "data": "name_sparepart",
                     "orderable": true,
                 },
                 {

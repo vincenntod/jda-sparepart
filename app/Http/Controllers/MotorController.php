@@ -13,15 +13,31 @@ class MotorController extends Controller
      */
     public function index()
     {
-        $post = DB::table('motor')->
-        leftjoin('brand', 'motor.id_brand', '=', 'brand.id')->
-        leftjoin('sparepart', 'motor.id_sparepart', '=', 'sparepart.id')->
-        leftjoin('category_motor', 'motor.id_category_motor', '=', 'category_motor.id')->
-        select('*', 'motor.id')->get();
+        $arr = [];
+        $motors = DB::table('motor')
+            ->leftJoin('brand', 'motor.id_brand', '=', 'brand.id')
+            ->leftJoin('category_motor', 'motor.id_category_motor', '=', 'category_motor.id')
+            ->select('motor.*', 'name_brand', 'name_category_motor')
+            ->get();
+    
+        foreach ($motors as $motor) {
+            $arr = explode(',',$motor->id_sparepart);
+            
+            if (is_array($arr)) {
+                $spareparts = DB::table('sparepart')
+                                ->whereIn('id', $arr)
+                                ->pluck('name_sparepart');
+                $motor->name_sparepart = $spareparts->toArray();
+            } else {
+                $motor->name_sparepart = [];
+            }
+        }
+    
         return response()->json([
-            'data' => $post
-        ],200);
+            'data' => $motors
+        ], 200);
     }
+    
 
     /**
      * Show the form for creating a new resource.
